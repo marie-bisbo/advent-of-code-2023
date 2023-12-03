@@ -7,7 +7,7 @@
 #include <regex>
 #include <filesystem>
 
-void Puzzle1()
+void Day1Puzzle1()
 {
 	std::fstream input;
 	input.open("../AdventOfCode2023/Day1/Day1Input.txt");
@@ -50,7 +50,7 @@ void Puzzle1()
 	std::cout << totalCalibrationValue << std::endl;
 }
 
-void Puzzle2()
+void Day1Puzzle2()
 {
 	std::map<std::string, int> wordToNumber;
 	wordToNumber["zero"] = '0';

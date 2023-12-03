@@ -1,4 +1,4 @@
 #pragma once
 
-void Puzzle1();
-void Puzzle2();
+void Day1Puzzle1();
+void Day1Puzzle2();
