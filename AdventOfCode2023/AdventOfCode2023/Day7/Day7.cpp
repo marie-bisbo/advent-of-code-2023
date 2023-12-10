@@ -17,6 +17,7 @@ struct Bid
 };
 
 std::map<char, int> cardToValue{ {'A', 14}, {'K', 13}, {'Q', 12}, {'J', 11}, {'T', 10} };
+std::map<char, int> cardToValueWithJoker{ {'A', 14}, {'K', 13}, {'Q', 12}, {'J', 1}, {'T', 10} };
 
 void Day7Puzzle1()
 {
@@ -87,6 +88,69 @@ void Day7Puzzle1()
 
 void Day7Puzzle2()
 {
+	std::fstream input;
+	input.open("../AdventOfCode2023/Day7/Day7Input.txt");
+	std::string inputLine;
+
+	std::vector<Bid> bids;
+
+	if (input.is_open())
+	{
+		while (!input.eof())
+		{
+			std::getline(input, inputLine);
+
+			std::string cards = inputLine.substr(0, 5);
+			int bidValue = std::stoi(inputLine.substr(6));
+			int hand = (int)identifyHandWithJoker(cards);
+			Bid bid{ hand, cards, bidValue };
+
+			auto insertIndex = std::upper_bound(bids.begin(), bids.end(), bid, [](const Bid& A, const Bid& B) {
+				if (A.hand != B.hand)
+				{
+					return A.hand < B.hand; 
+				}
+				for (int i = 0; i < 5; i++)
+				{
+					if (A.cards[i] != B.cards[i])
+					{
+						int a = 0;
+						if (cardToValueWithJoker.contains(A.cards[i]))
+						{
+							a = cardToValueWithJoker[A.cards[i]];
+						}
+						else
+						{
+							a = A.cards[i] - '0';
+						}
+
+						int b = 0;
+						if (cardToValueWithJoker.contains(B.cards[i]))
+						{
+							b = cardToValueWithJoker[B.cards[i]];
+						}
+						else
+						{
+							b = B.cards[i] - '0';
+						}
+
+						return a < b;
+					}
+				}
+				});
+
+			bids.insert(insertIndex, bid);
+		}
+	}
+
+	long totalWinnings = 0;
+
+	for (int bid = 0; bid < bids.size(); bid++)
+	{
+		totalWinnings += (bid + 1) * bids[bid].bid;
+	}
+
+	std::cout << totalWinnings << std::endl;
 }
 
 Hand identifyHand(const std::string& cards)
@@ -129,4 +193,77 @@ Hand identifyHand(const std::string& cards)
 	}
 
 	return Hand::highCard;
+}
+
+Hand identifyHandWithJoker(const std::string& cards)
+{
+	std::string cardsMinusJokers = "";
+	std::unordered_set<char> uniqueCards;
+	for (const auto card : cards)
+	{
+		if (card != 'J')
+		{
+			cardsMinusJokers += card;
+			uniqueCards.emplace(card);
+		}
+	}
+
+	if (cardsMinusJokers.empty())
+	{
+		return Hand::fiveOfAKind;
+	}
+
+	if (cardsMinusJokers.length() == 1)
+	{
+		return Hand::fiveOfAKind;
+	}
+
+	if (cardsMinusJokers.length() == 2)
+	{
+		if (cardsMinusJokers[0] == cardsMinusJokers[1])
+		{
+			return Hand::fiveOfAKind;
+		}
+
+		return Hand::fourOfAKind;
+	}
+
+	if (cardsMinusJokers.length() == 3)
+	{
+		if (uniqueCards.size() == 1)
+		{
+			return Hand::fiveOfAKind;
+		}
+		if (uniqueCards.size() == 2)
+		{
+			return Hand::fourOfAKind;
+		}
+
+		return Hand::threeOfAKind;
+	}
+
+	if (cardsMinusJokers.length() == 4)
+	{
+		if (uniqueCards.size() == 1)
+		{
+			return Hand::fiveOfAKind;
+		}
+		if (uniqueCards.size() == 2)
+		{
+			if (std::count(cards.begin(), cards.end(), *uniqueCards.begin()) == 1 || std::count(cards.begin(), cards.end(), *uniqueCards.begin()) == 3)
+			{
+				return Hand::fourOfAKind;
+			}
+
+			return Hand::fullHouse;
+		}
+		if (uniqueCards.size() == 3)
+		{
+			return Hand::threeOfAKind;
+		}
+
+		return Hand::onePair;
+	}
+
+	return identifyHand(cards);
 }

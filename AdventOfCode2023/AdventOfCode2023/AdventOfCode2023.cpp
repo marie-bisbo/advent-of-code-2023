@@ -3,7 +3,7 @@
 
 int main()
 {
-	Day7Puzzle1();
+	Day7Puzzle2();
 
 	return 0;
 }
