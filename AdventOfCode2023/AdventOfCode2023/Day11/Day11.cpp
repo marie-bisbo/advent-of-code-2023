@@ -116,7 +116,7 @@ void Day11Puzzle2()
 		universe[location].x += (tempX * 999999);
 	}
 
-	long sumOfLengths = 0;
+	long long sumOfLengths = 0;
 	for (int row = 0; row < universe.size() - 1; row++)
 	{
 		for (int other = row + 1; other < universe.size(); other++)
