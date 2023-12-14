@@ -1,9 +1,9 @@
 #include <iostream>
-#include "Day9/Day9.h"
+#include "Day14/Day14.h"
 
 int main()
 {
-	Day9Puzzle2();
+	Day14Puzzle1();
 
 	return 0;
 }
