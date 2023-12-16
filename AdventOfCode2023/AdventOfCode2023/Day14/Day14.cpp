@@ -11,8 +11,8 @@
 #include <cstdlib>
 #include <sstream>
 
-constexpr int HEIGHT = 100;
-constexpr int WIDTH = 100;
+constexpr int HEIGHT = 10;
+constexpr int WIDTH = 10;
 
 void Day14Puzzle1()
 {
@@ -36,28 +36,30 @@ void Day14Puzzle1()
 			}
 		}
 	}
+	const std::vector<char> originalElements = elements;
 
-	for (int i = 0; i < elements.size(); i++)
+	for (int cycle = 0; cycle < 1000000000; cycle++)
 	{
-		if (elements[i] == 'O')
+		std::cout << cycle << std::endl;
+		const std::vector<char> oldElements = elements;
+		TiltNorth(elements);
+		TiltWest(elements);
+		TiltSouth(elements);
+		TiltEast(elements);
+		if (CompareElements(oldElements, elements))
 		{
-			bool canMove = true;
-			int temp = i;
-			while (canMove)
-			{
-				if (temp - WIDTH >= 0 && elements[temp - WIDTH] == '.')
-				{
-					elements[temp] = '.';
-					elements[temp - WIDTH] = 'O';
-					temp -= WIDTH;
-				}
-				else
-				{
-					canMove = false;
-					break;
-				}
-			}
+			std::cout << cycle << std::endl;
+			break;
 		}
+	}
+
+	for (int k = 0; k < elements.size(); k++)
+	{
+		if (k % 10 == 0)
+		{
+			std::cout << std::endl;
+		}
+		std::cout << elements[k];
 	}
 
 	for (int j = 0; j < elements.size(); j++)
@@ -76,7 +78,7 @@ void Day14Puzzle2()
 {
 }
 
-void TiltNorth(std::vector<char> elements)
+void TiltNorth(std::vector<char>& elements)
 {
 	for (int i = 0; i < elements.size(); i++)
 	{
@@ -100,20 +102,103 @@ void TiltNorth(std::vector<char> elements)
 			}
 		}
 	}
-
 }
 
-void TiltWest(std::vector<char> elements)
+void TiltSouth(std::vector<char>& elements)
 {
-
+	for (int i = elements.size() - 1; i >= 0; i--)
+	{
+		if (elements[i] == 'O')
+		{
+			bool canMove = true;
+			int temp = i;
+			while (canMove)
+			{
+				if (temp + WIDTH < (WIDTH * HEIGHT) && elements[temp + WIDTH] == '.')
+				{
+					elements[temp] = '.';
+					elements[temp + WIDTH] = 'O';
+					temp += WIDTH;
+				}
+				else
+				{
+					canMove = false;
+					break;
+				}
+			}
+		}
+	}
 }
 
-void TiltSouth(std::vector<char> elements)
-{
 
+void TiltWest(std::vector<char>& elements)
+{
+	for (int i = 0; i < elements.size(); i++)
+	{
+		if (elements[i] == 'O')
+		{
+			bool canMove = true;
+			int temp = i;
+			while (canMove)
+			{
+				int edge = i - (i % WIDTH);
+				if (temp - 1 >= edge && elements[temp - 1] == '.')
+				{
+					elements[temp] = '.';
+					elements[temp - 1] = 'O';
+					temp--;
+				}
+				else
+				{
+					canMove = false;
+					break;
+				}
+			}
+		}
+	}
 }
 
-void TiltEast(std::vector<char> elements)
+void TiltEast(std::vector<char>& elements)
 {
+	for (int i = elements.size() - 1; i >= 0; i--)
+	{
+		if (elements[i] == 'O')
+		{
+			bool canMove = true;
+			int temp = i;
+			while (canMove)
+			{
+				int edge = ((int)(i / WIDTH) * WIDTH) + WIDTH;
+				if (temp + 1 < edge && elements[temp + 1] == '.')
+				{
+					elements[temp] = '.';
+					elements[temp + 1] = 'O';
+					temp++;
+				}
+				else
+				{
+					canMove = false;
+					break;
+				}
+			}
+		}
+	}
+}
 
+bool CompareElements(const std::vector<char>& first, const std::vector<char>& second)
+{
+	if (first.size() != second.size())
+	{
+		return false;
+	}
+	
+	for (int i = 0; i < first.size(); i++)
+	{
+		if (first[i] != second[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
